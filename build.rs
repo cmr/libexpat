@@ -9,7 +9,7 @@ use std::env;
 
 fn main() {
     let target = env::var("TARGET").unwrap();
-    if !target.contains("android")
+    if !target.contains("android") &&  !target.contains("wasm32")
         && pkg_config::Config::new()
             .atleast_version("2.1.0")
             .find("expat")
@@ -18,6 +18,8 @@ fn main() {
         return;
     }
 
+    env::set_var("CC", "emcc");
+    env::set_var("CMAKE", env::current_dir().unwrap().join("cmake-emsdk-selector.sh"));
     let mut dst = cmake::Config::new("expat")
         .define("BUILD_shared", "OFF")
         .define("BUILD_tools", "OFF")
